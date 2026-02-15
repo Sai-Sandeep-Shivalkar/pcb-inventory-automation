@@ -11,13 +11,13 @@ import UploadPage from './pages/UploadPage';
 
 function ProtectedRoute({ children }) {
   const { token } = useAuth();
-  const bypassLogin = import.meta.env.VITE_BYPASS_LOGIN === 'true';
+  const bypassLogin = import.meta.env.VITE_BYPASS_LOGIN !== 'false';
   return token || bypassLogin ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
   const { token } = useAuth();
-  const bypassLogin = import.meta.env.VITE_BYPASS_LOGIN === 'true';
+  const bypassLogin = import.meta.env.VITE_BYPASS_LOGIN !== 'false';
 
   return (
     <Routes>
