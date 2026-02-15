@@ -4,12 +4,38 @@ import { api } from '../api/client';
 
 export default function DashboardPage() {
   const [data, setData] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    api.get('/analytics/dashboard').then((res) => setData(res.data));
+    let cancelled = false;
+    (async () => {
+      try {
+        setError('');
+        const res = await api.get('/analytics/dashboard');
+        if (!cancelled) setData(res.data);
+      } catch (err) {
+        const msg = err?.response?.data?.message || err?.message || 'Failed to load dashboard';
+        if (!cancelled) setError(msg);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
 
-  if (!data) return <div>Loading dashboard...</div>;
+  if (!data) {
+    return (
+      <div className="card">
+        <h3>Loading dashboard...</h3>
+        {error && (
+          <div className="alert error" style={{ marginTop: 10 }}>
+            {error}
+            <div style={{ marginTop: 8, color: 'var(--muted)' }}>
+              Check backend is running and `VITE_API_URL` points to it (usually `http://127.0.0.1:5001/api`).
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   const { kpis, topConsumed, monthlyTrend, lowStock } = data;
 
