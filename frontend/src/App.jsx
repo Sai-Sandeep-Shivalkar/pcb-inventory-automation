@@ -11,15 +11,17 @@ import UploadPage from './pages/UploadPage';
 
 function ProtectedRoute({ children }) {
   const { token } = useAuth();
-  return token ? children : <Navigate to="/login" replace />;
+  const bypassLogin = import.meta.env.VITE_BYPASS_LOGIN === 'true';
+  return token || bypassLogin ? children : <Navigate to="/login" replace />;
 }
 
 export default function App() {
   const { token } = useAuth();
+  const bypassLogin = import.meta.env.VITE_BYPASS_LOGIN === 'true';
 
   return (
     <Routes>
-      <Route path="/login" element={token ? <Navigate to="/" replace /> : <LoginPage />} />
+      <Route path="/login" element={token || bypassLogin ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route
         path="/"
         element={
@@ -35,7 +37,7 @@ export default function App() {
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="upload" element={<UploadPage />} />
       </Route>
-      <Route path="*" element={<Navigate to={token ? '/' : '/login'} replace />} />
+      <Route path="*" element={<Navigate to={token || bypassLogin ? '/' : '/login'} replace />} />
     </Routes>
   );
 }
