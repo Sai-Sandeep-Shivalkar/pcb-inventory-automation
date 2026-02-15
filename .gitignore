@@ -1,0 +1,11 @@
+# Node
+node_modules/
+
+# Env (keep secrets local)
+.env
+
+# Frontend build artifacts
+frontend/dist/
+
+# Misc
+.DS_Store
