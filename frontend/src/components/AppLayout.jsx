@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,13 +13,25 @@ const links = [
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   return (
     <div className="app-shell">
       <aside className="sidebar">
-        <h1>PCB AutoIQ</h1>
-        <p className="subtitle">Inventory Automation</p>
-        <nav>
+        <div className="brand">
+          <div className="brand-mark">PA</div>
+          <div>
+            <h1>PCB AutoIQ</h1>
+            <p className="subtitle">Inventory Automation</p>
+          </div>
+        </div>
+        <p className="nav-title">Operations</p>
+        <nav className="nav-stack">
           {links.map((link) => (
             <NavLink key={link.to} to={link.to} end={link.to === '/'} className="nav-link">
               {link.label}
@@ -26,6 +39,13 @@ export default function AppLayout() {
           ))}
         </nav>
         <div className="sidebar-footer">
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+          >
+            Switch to {theme === 'light' ? 'Dark' : 'Light'} Theme
+          </button>
           <div className="user-chip">{user?.email}</div>
           <button onClick={logout} className="danger">Logout</button>
         </div>
